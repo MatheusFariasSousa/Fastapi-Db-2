@@ -11,6 +11,9 @@ fastapi = "^0.111.0"
 pytest = "^8.2.2"
 sqlalchemy = "^2.0.31"
 alembic = "^1.13.2"
+pyjwt = "^2.8.0"
+pwdlib = {extras = ["argon2"], version = "^0.2.0"}
+python-dotenv = "^1.0.1"
 
 
 [build-system]

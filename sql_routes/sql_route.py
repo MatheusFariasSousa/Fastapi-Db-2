@@ -3,6 +3,11 @@ from conexao.conex import conect_depends
 from sqlalchemy import select
 from conexao.schema import Usuarios,UsuarioOutput,UsuarioInput
 from sqlalchemy.orm import Session
+from typing import Annotated
+
+
+
+T_Session = Annotated[Session,Depends(conect_depends)]
 
 router_sql = APIRouter(prefix="/sql")
 
@@ -15,7 +20,7 @@ def get_all(session:Session=Depends(conect_depends)):
 
 
 @router_sql.get("/get/{id}",status_code=status.HTTP_200_OK,response_model=UsuarioOutput)
-def get_by_id(id:int,session:Session= Depends(conect_depends)):
+def get_by_id(id:int,session:T_Session):
     user = session.scalar(select(Usuarios).where(Usuarios.id == id))
     if not user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="Nao existe esse id no banco")
@@ -23,11 +28,11 @@ def get_by_id(id:int,session:Session= Depends(conect_depends)):
 
 
 @router_sql.post("/post",response_model=UsuarioOutput,status_code=status.HTTP_201_CREATED)
-def add_usuario(user:UsuarioInput,session:Session=Depends(conect_depends)):
-    pessoa = Usuarios(nome=user.nome,cpf=user.cpf)
-    cpf_textado = session.scalar(select(Usuarios).where(Usuarios.cpf == pessoa.cpf))
+def add_usuario(user:UsuarioInput,session:T_Session):
+    cpf_textado = session.scalar(select(Usuarios).where(Usuarios.cpf == user.cpf))
     if cpf_textado:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail= f"Esse cpf ja foi utilizado {cpf_textado.cpf}")
+    pessoa = Usuarios(nome=user.nome,cpf=user.cpf)
     session.add(pessoa)
     session.commit()
     session.refresh(pessoa)
@@ -36,7 +41,7 @@ def add_usuario(user:UsuarioInput,session:Session=Depends(conect_depends)):
 
 
 @router_sql.put("/put/{id}",response_model=UsuarioOutput,status_code=status.HTTP_200_OK)
-def upddate_user(id:int,user:UsuarioInput,session:Session=Depends(conect_depends)):
+def update_user(id:int,user:UsuarioInput,session:T_Session):
     pessoa = Usuarios(nome=user.nome,cpf=user.cpf)
     user = session.scalar(select(Usuarios).where(Usuarios.id == id))
     if not user:
@@ -57,7 +62,7 @@ def upddate_user(id:int,user:UsuarioInput,session:Session=Depends(conect_depends
 
     
 @router_sql.delete("/delete/{id}",status_code=status.HTTP_200_OK)
-def delete_user(id:int,session:Session=Depends(conect_depends)):
+def delete_user(id:int,session:T_Session):
     user = session.scalar(select(Usuarios).where(Usuarios.id == id))
     if not user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="Nao existe esse id no banco")

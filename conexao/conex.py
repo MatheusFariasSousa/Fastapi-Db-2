@@ -1,11 +1,19 @@
 from sqlalchemy import create_engine
 from sqlalchemy import text
 from sqlalchemy.orm import Session,sessionmaker
-from conexao.schema import table_registry,Usuarios
+
+from os import getenv
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
+db_url= getenv("DB_URL")
 
 
 
-engine = create_engine("sqlite:///database.db")
+
+engine = create_engine(db_url)
 
 
 def conect_depends():

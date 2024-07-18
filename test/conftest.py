@@ -5,13 +5,13 @@ from sqlalchemy.engine import create_engine
 from sqlalchemy.orm import Session
 from sqlalchemy.pool import StaticPool
 
-
 from main import app
 
 from conexao.conex import conect_depends
 from conexao.schema import table_registry,Usuarios
 
 from fastapi.testclient import TestClient
+
 
 
 @pytest.fixture

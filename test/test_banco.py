@@ -1,5 +1,4 @@
 
-from fastapi.testclient import TestClient
 from fastapi import status
 
 def test_health_check(client):
